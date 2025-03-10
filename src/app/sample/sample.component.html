@@ -1,0 +1,182 @@
+<div class="container">
+  <h1>{{ title }}</h1>
+
+  <div class="form-container">
+    <h2>{{ formMode === "add" ? "Add New Rule" : "Edit Rule" }}</h2>
+
+    <form [formGroup]="ruleForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="ruleName">Rule Name</label>
+        <input
+          type="text"
+          id="ruleName"
+          formControlName="ruleName"
+          class="form-control"
+        />
+        <div
+          *ngIf="
+            ruleForm.get('ruleName')?.invalid &&
+            ruleForm.get('ruleName')?.touched
+          "
+          class="error"
+        >
+          Rule name is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="active">Active Status</label>
+        <select id="active" formControlName="active" class="form-control">
+          <option *ngFor="let option of yesNoOptions" [value]="option">
+            {{ option }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="type">Type</label>
+        <select id="type" formControlName="type" class="form-control">
+          <option *ngFor="let option of typeOptions" [value]="option">
+            {{ option }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="favourite">Favorite</label>
+        <select id="favourite" formControlName="favourite" class="form-control">
+          <option *ngFor="let option of yesNoOptions" [value]="option">
+            {{ option }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="scheduled">Scheduled</label>
+        <select id="scheduled" formControlName="scheduled" class="form-control">
+          <option *ngFor="let option of yesNoOptions" [value]="option">
+            {{ option }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="alert">Alert</label>
+        <select id="alert" formControlName="alert" class="form-control">
+          <option *ngFor="let option of yesNoOptions" [value]="option">
+            {{ option }}
+          </option>
+        </select>
+      </div>
+
+      <div class="button-group">
+        <button
+          type="submit"
+          [disabled]="ruleForm.invalid"
+          class="btn btn-primary"
+        >
+          {{ formMode === "add" ? "Save" : "Update" }}
+        </button>
+        <button
+          type="button"
+          *ngIf="formMode === 'edit'"
+          (click)="cancelEdit()"
+          class="btn btn-secondary"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Table Actions Section -->
+  <div class="table-actions">
+    <div class="search-box">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search..."
+        [(ngModel)]="filterText"
+        (input)="applyFilter()"
+      />
+    </div>
+    <div class="action-buttons">
+      <button
+        (click)="deleteSelectedRules()"
+        class="btn btn-danger"
+        [disabled]="getSelectedCount() === 0"
+      >
+        Delete Selected ({{ getSelectedCount() }})
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>
+            <input
+              type="checkbox"
+              [checked]="selectAll"
+              (change)="toggleSelectAll()"
+            />
+          </th>
+          <th (click)="sort('id')" class="sortable">
+            ID <i [class]="getSortIcon('id')"></i>
+          </th>
+          <th (click)="sort('ruleName')" class="sortable">
+            Rule Name <i [class]="getSortIcon('ruleName')"></i>
+          </th>
+          <th (click)="sort('active')" class="sortable">
+            Active Status <i [class]="getSortIcon('active')"></i>
+          </th>
+          <th (click)="sort('type')" class="sortable">
+            Type <i [class]="getSortIcon('type')"></i>
+          </th>
+          <th (click)="sort('favourite')" class="sortable">
+            Favorite <i [class]="getSortIcon('favourite')"></i>
+          </th>
+          <th (click)="sort('scheduled')" class="sortable">
+            Scheduled <i [class]="getSortIcon('scheduled')"></i>
+          </th>
+          <th (click)="sort('cratedDate')" class="sortable">
+            Created Date <i [class]="getSortIcon('cratedDate')"></i>
+          </th>
+          <th (click)="sort('alert')" class="sortable">
+            Alert <i [class]="getSortIcon('alert')"></i>
+          </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let rule of rules">
+          <td>
+            <input
+              type="checkbox"
+              [checked]="isSelected(rule.id!)"
+              (change)="toggleSelectRule(rule.id!)"
+            />
+          </td>
+          <td>{{ rule.id }}</td>
+          <td>{{ rule.ruleName }}</td>
+          <td>{{ rule.active }}</td>
+          <td>{{ rule.type }}</td>
+          <td>{{ rule.favourite }}</td>
+          <td>{{ rule.scheduled }}</td>
+          <td>{{ rule.cratedDate }}</td>
+          <td>{{ rule.alert }}</td>
+          <td>
+            <button (click)="editRule(rule)" class="btn btn-sm btn-edit">
+              Edit
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="rules.length === 0">
+          <td colspan="10" class="text-center">No rules found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
